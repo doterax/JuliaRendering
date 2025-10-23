@@ -2,12 +2,13 @@
 #include <string>
 #include "utils/event_manager.hpp"
 #include "utils/binary_io.hpp"
-#include "async_renderer.hpp"
-#include "config.hpp"
+//#include "async_renderer.hpp"
+#include "open_cl_renderer.hpp"
+//#include "config.hpp"
 
 int main()
 {
-    const sf::Vector2u window_size{2560, 1440};
+    const sf::Vector2u window_size{1920, 1080};
     sf::RenderWindow window(sf::VideoMode(window_size.x, window_size.y), "Fractal", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
@@ -26,7 +27,8 @@ int main()
     auto                           zoom        = static_cast<Config::FloatType>(window.getSize().y) / 2;
     sf::Vector2<Config::FloatType> center      {0.0, 0.0};
 
-    AsyncRenderer<Config::FloatType> renderer{window_size.x, window_size.y, zoom};
+    //AsyncRenderer<Config::FloatType> renderer{window_size.x, window_size.y, zoom};
+    OpenClRenderer<Config::FloatType> renderer{window_size.x, window_size.y, zoom};
 
     bool zoom_in  = false;
     bool zoom_out = false;
@@ -69,7 +71,7 @@ int main()
         const Config::FloatType offset = speed / zoom;
         zoom = zoom_in ? zoom * zoom_factor : (zoom_out ? zoom / zoom_factor : zoom);
         // Auto zoom
-        //zoom *= 1.0012;
+        zoom *= 1.0012;
         center.x += left ? -offset : (right ? offset : Config::FloatType{});
         center.y += up   ? -offset : (down  ? offset : Config::FloatType{});
 
