@@ -88,14 +88,16 @@ __kernel void generate_julia(
         return;
 
     const double2 win_center = (double2)(0.5 * (double)width, 0.5 * (double)height);
-    const double2 pixel_pos  = ((double2)(x, y) - win_center) / render_zoom + (double2)(center_x, center_y);
+    const double2 center = (double2)(center_x, center_y);
+    const double2 pixel = (double2)(x, y);
     const double invMaxIter   = 1.0 / (double)maxIterations;
     float4 color_accum = (float4)(0.0f, 0.0f, 0.0f, 0.0f);
 
     for (uint i = 0; i < samples_count; ++i) {
-        double2 offset = anti_aliasing_offsets[i] / render_zoom;
-        double2 sample_pos = pixel_pos + offset;
-        double iter_ratio = julia_iter(sample_pos, maxIterations) * invMaxIter;
+        const double2 sample_pos  = ( (pixel + anti_aliasing_offsets[i] ) - win_center) / render_zoom + center;
+
+        const double iter_ratio = julia_iter(sample_pos, maxIterations) * invMaxIter;
+
         color_accum += interpolate_color((float)iter_ratio, palette, palette_size);
     }
 
